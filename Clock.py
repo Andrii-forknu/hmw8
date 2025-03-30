@@ -97,3 +97,65 @@ class LightTheme:
     hour_hand_color = "black"
     minute_hand_color = "blue"
     second_hand_color = "red"
+
+
+class Watch(ABC):
+    def init(self, theme: Theme = LightTheme()):
+        self.theme = theme
+        self.screen = turtle.Screen()
+        self.configure_screen()
+
+    def configure_screen(self) -> None:
+        self.screen.bgcolor(self.theme.background_color)
+        self.screen.title("Python Turtle Watch")
+        self.screen.tracer(0)
+
+    @abstractmethod
+    def setup(self) -> None:
+        pass
+
+    @abstractmethod
+    def update(self) -> None:
+        pass
+
+    def run(self, update_interval: float = 1.0) -> None:
+        self.setup()
+        while True:
+            try:
+                self.update()
+                self.screen.update()
+                time.sleep(update_interval)
+            except (KeyboardInterrupt, turtle.Terminator):
+                break
+
+
+class AnalogWatch(Watch):
+    def init(self, theme: Theme = LightTheme(), radius: float = 200):
+        super().init(theme)
+        self.radius = radius
+        self.clock_face = ClockFace(radius)
+        self.hour_hand = Hand(radius * 0.5, 6, theme.hour_hand_color)
+        self.minute_hand = Hand(radius * 0.7, 4, theme.minute_hand_color)
+        self.second_hand = Hand(radius * 0.9, 2, theme.second_hand_color)
+
+    def setup(self) -> None:
+        self.clock_face.setup()
+        self.clock_face.draw()
+
+    def update(self) -> None:
+        current_time = datetime.now()
+        second_angle = current_time.second * 6
+        minute_angle = current_time.minute * 6 + current_time.second * 0.1
+        hour_angle = (current_time.hour % 12) * 30 + current_time.minute * 0.5
+        self.hour_hand.update(hour_angle)
+        self.minute_hand.update(minute_angle)
+        self.second_hand.update(second_angle)
+
+
+def main():
+    analog_clock = AnalogWatch(theme=LightTheme())
+    analog_clock.run(update_interval=1.0)
+
+
+if name == "main":
+    main()
