@@ -80,3 +80,20 @@ class Hand:
     def update(self, angle: float) -> None:
         self.angle = angle
         self.draw()
+
+class Theme(Protocol):
+    background_color: str
+    face_color: str
+    digit_color: str
+    hour_hand_color: str
+    minute_hand_color: str
+    second_hand_color: str
+
+
+class LightTheme:
+    background_color = "white"
+    face_color = "#f0f0f0"
+    digit_color = "black"
+    hour_hand_color = "black"
+    minute_hand_color = "blue"
+    second_hand_color = "red"
